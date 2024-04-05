@@ -13,7 +13,7 @@ let postWebhook = (req, res) => {
 
             // Gets the body of the webhook event
             let webhook_event = entry.messaging[0];
-            console.log(webhook_event);
+            console.log("web hook Event:", webhook_event);
 
             // Get the sender PSID
             let sender_psid = webhook_event.sender.id;
@@ -21,8 +21,8 @@ let postWebhook = (req, res) => {
 
             //TODO:
             //if page is sending to user, bot deactivate for 5 min for this user
-            if (p.sender_psid === process.env.FB_PAGE_ID) {
-
+            if (sender_psid === process.env.FB_PAGE_ID) {
+                console.log('PAGE ID: ' + sender_psid);
                 return;
             }
 
