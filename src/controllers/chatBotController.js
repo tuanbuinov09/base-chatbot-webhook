@@ -15,10 +15,16 @@ let postWebhook = (req, res) => {
             let webhook_event = entry.messaging[0];
             console.log(webhook_event);
 
-
             // Get the sender PSID
             let sender_psid = webhook_event.sender.id;
             console.log('Sender PSID: ' + sender_psid);
+
+            //TODO:
+            //if page is sending to user, bot deactivate for 5 min for this user
+            if (p.sender_psid === process.env.FB_PAGE_ID) {
+
+                return;
+            }
 
             // Check if the event is a message or postback and
             // pass the event to the appropriate handler function
@@ -163,25 +169,14 @@ let callSendAPIWithTemplate = (sender_psid) => {
                     "template_type": "generic",
                     "elements": [
                         {
-                            "title": "Welcome!",
-                            "image_url": "https://petersfancybrownhats.com/company_image.png",
-                            "subtitle": "We have the right hat for everyone.",
-                            "default_action": {
-                                "type": "web_url",
-                                "url": "https://petersfancybrownhats.com/view?item=103",
-                                "messenger_extensions": false,
-                                "webview_height_ratio": "tall",
-                                "fallback_url": "https://petersfancybrownhats.com/"
-                            },
+                            "title": "Welcome",
+                            "image_url": "https://www.nexmo.com/wp-content/uploads/2018/10/build-bot-messages-api-768x384.png",
+                            "subtitle": "Welcomeeeeeeeeeeeeeeeeeee",
                             "buttons": [
                                 {
                                     "type": "web_url",
-                                    "url": "https://petersfancybrownhats.com",
-                                    "title": "View Website"
-                                }, {
-                                    "type": "postback",
-                                    "title": "Start Chatting",
-                                    "payload": "DEVELOPER_DEFINED_PAYLOAD"
+                                    "url": "https://www.youtube.com/watch?v=uYXwxJBt6T4",
+                                    "title": "Watch now"
                                 }
                             ]
                         }
