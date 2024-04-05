@@ -1,5 +1,5 @@
 {
-  "name": "dr.face-chatbot-webhooks-nodejs",
+  "name": "facebook-chatbot-webhook-nodejs",
   "version": "1.0.0",
   "description": "chatbot nodejs",
   "main": "server.js",
