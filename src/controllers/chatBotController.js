@@ -1,6 +1,32 @@
 require("dotenv").config();
 import request from "request";
 
+// Example function to check if any page admins are online
+let areAdminsOnline = async (pageId) {
+    const response = await fetch(`https://graph.facebook.com/v12.0/${pageId}/admins?access_token=${process.FB_PAGE_TOKEN}`);
+    const admins = await response.json();
+
+    for (const admin of admins.data) {
+        const userResponse = await fetch(`https://graph.facebook.com/v12.0/${admin.id}?fields=active&access_token=${process.FB_PAGE_TOKEN}`);
+        const userData = await userResponse.json();
+
+        if (userData.active) {
+            return true; // At least one admin is online
+        }
+    }
+
+    return false; // No admins are online
+};
+
+// get admin psid
+let getAdminsPSIDs = async (pageId) {
+    const response = await fetch(`https://graph.facebook.com/v12.0/${page - id}/roles?access_token=${process.FB_PAGE_TOKEN}`);
+    const admins = await response.json();
+
+    return admins; // No admins are online
+};
+
+
 let postWebhook = (req, res) => {
     // Parse the request body from the POST
     let body = req.body;
@@ -18,6 +44,8 @@ let postWebhook = (req, res) => {
             // Get the sender PSID
             let sender_psid = webhook_event.sender.id;
             console.log('Sender PSID: ' + sender_psid);
+
+            const adminsPSIDs = await getAdminsPSIDs(process.env.FB_PAGE_ID);
 
             //TODO:
             //if page is sending to user, bot deactivate for 5 min for this user
