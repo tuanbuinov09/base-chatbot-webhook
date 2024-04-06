@@ -2,7 +2,7 @@ require("dotenv").config();
 import request from "request";
 
 // Example function to check if any page admins are online
-let areAdminsOnline = async (pageId) {
+async function areAdminsOnline(pageId) {
     const response = await fetch(`https://graph.facebook.com/v12.0/${pageId}/admins?access_token=${process.FB_PAGE_TOKEN}`);
     const admins = await response.json();
 
@@ -19,7 +19,7 @@ let areAdminsOnline = async (pageId) {
 };
 
 // get admin psid
-let getAdminsPSIDs = async (pageId) {
+async function getAdminsPSIDs(pageId) {
     const response = await fetch(`https://graph.facebook.com/v12.0/${page - id}/roles?access_token=${process.FB_PAGE_TOKEN}`);
     const admins = await response.json();
 
@@ -35,7 +35,7 @@ let postWebhook = (req, res) => {
     if (body.object === 'page') {
 
         // Iterate over each entry - there may be multiple if batched
-        body.entry.forEach(function (entry) {
+        body.entry.forEach(async function (entry) {
 
             // Gets the body of the webhook event
             let webhook_event = entry.messaging[0];
