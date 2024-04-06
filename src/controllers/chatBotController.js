@@ -47,6 +47,8 @@ let postWebhook = (req, res) => {
 
             const adminsPSIDs = await getAdminsPSIDs(process.env.FB_PAGE_ID);
 
+            console.log("adminsPSIDs", adminsPSIDs)
+
             //TODO:
             //if page is sending to user, bot deactivate for 5 min for this user
             if (sender_psid === process.env.FB_PAGE_ID) {
