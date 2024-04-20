@@ -133,18 +133,18 @@ async function handleMessage(sender_psid, received_message) {
 
     //check if need to notify admin
     if (received_message.text && received_message.text.includes('notify admin')) {
-        var admins = await getAdminsPSIDs(process.env.FB_PAGE_ID);
+        // var admins = await getAdminsPSIDs(process.env.FB_PAGE_ID);
 
-        console.log(admins);
+        // console.log(admins);
 
-        var username = await getUserName(sender_psid);
+        // var username = await getUserName(sender_psid);
 
         // Create the payload for a basic text message
-        response = {
-            "text": `an user with name ${username} has message the page`
-        }
+        // response = {
+        //     "text": `an user with name ${username} has message the page`
+        // }
 
-        // await sendToAdmin(null, `an user with name ${username} has message the page`)
+        await sendToAdmin(null, `an user with name ${'USER NULL'} has message the page`, '7105878449522112')
     }
     else
 
