@@ -21,7 +21,7 @@ async function areAdminsOnline(pageId) {
 // get admins psid
 async function getAdminsPSIDs(pageId) {
     // try {
-    const response = await axios.get(
+    const response = await fetch(
         `https://graph.facebook.com/v7.0/${pageId}?fields=roles&access_token=${process.env.FB_PAGE_TOKEN}`
     );
 
