@@ -49,7 +49,7 @@ async function getUserName(psid) {
         const response = await axios.get(`https://graph.facebook.com/${psid}?fields=name&access_token=${process.env.FB_PAGE_TOKEN}`);
         return response.data.name;
     } catch (error) {
-        console.error('Failed to get user name:', error.response.data);
+        console.error('Failed to get user name:', error);
         return null;
     }
 }
