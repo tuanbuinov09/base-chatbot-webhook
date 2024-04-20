@@ -21,13 +21,24 @@ async function areAdminsOnline(pageId) {
 // get admins psid
 async function getAdminsPSIDs(pageId) {
     try {
-        const response = await fetch(`https://graph.facebook.com/v7.0/${pageId}?fields=roles&access_token=${process.env.FB_PAGE_TOKEN}`);
-        const admins = await response.json();
+        const response = await axios.get(
+            `https://graph.facebook.com/v7.0/${pageId}?fields=roles&access_token=${process.env.FB_PAGE_TOKEN}`
+        );
 
-        return admins;
-    }
-    catch (error) {
-        console.error('error getting admins id: ', error.message);
+        // Parse the response to extract admins' PSIDs
+        const adminsPSIDs = [];
+        const roles = response.data.roles.data;
+
+        roles.forEach(role => {
+            if (role.role === 'ADMIN') {
+                adminsPSIDs.push(role.id);
+            }
+        });
+
+        return adminsPSIDs;
+    } catch (error) {
+        console.error('Failed to get admins\' PSIDs:', error.response.data);
+        return [];
     }
 };
 
