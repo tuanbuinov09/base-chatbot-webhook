@@ -3,11 +3,11 @@ import request from "request";
 
 // Example function to check if any page admins are online
 async function areAdminsOnline(pageId) {
-    const response = await fetch(`https://graph.facebook.com/v12.0/${pageId}/admins?access_token=${process.FB_PAGE_TOKEN}`);
+    const response = await fetch(`https://graph.facebook.com/v12.0/${pageId}/admins?access_token=${process.env.FB_PAGE_TOKEN}`);
     const admins = await response.json();
 
     for (const admin of admins.data) {
-        const userResponse = await fetch(`https://graph.facebook.com/v12.0/${admin.id}?fields=active&access_token=${process.FB_PAGE_TOKEN}`);
+        const userResponse = await fetch(`https://graph.facebook.com/v12.0/${admin.id}?fields=active&access_token=${process.env.FB_PAGE_TOKEN}`);
         const userData = await userResponse.json();
 
         if (userData.active) {
@@ -20,7 +20,7 @@ async function areAdminsOnline(pageId) {
 
 // get admins psid
 async function getAdminsPSIDs(pageId) {
-    const response = await fetch(`https://graph.facebook.com/v12.0/${pageId}/roles?access_token=${process.FB_PAGE_TOKEN}`);
+    const response = await fetch(`https://graph.facebook.com/v12.0/${pageId}/roles?access_token=${process.env.FB_PAGE_TOKEN}`);
     const admins = await response.json();
 
     return admins;
@@ -34,7 +34,7 @@ async function sendToAdmin(senderPSID, messageText, ADMIN_PSID) {
             recipient: { id: ADMIN_PSID },
             message: { text: messageText },
             messaging_type: 'RESPONSE',
-            access_token: process.FB_PAGE_TOKEN
+            access_token: process.env.FB_PAGE_TOKEN
         });
 
         console.log('Message sent to admin:', response.data);
@@ -46,7 +46,7 @@ async function sendToAdmin(senderPSID, messageText, ADMIN_PSID) {
 // Function to get user's name by PSID
 async function getUserName(psid) {
     try {
-        const response = await axios.get(`https://graph.facebook.com/${psid}?fields=name&access_token=${process.FB_PAGE_TOKEN}`);
+        const response = await axios.get(`https://graph.facebook.com/${psid}?fields=name&access_token=${process.env.FB_PAGE_TOKEN}`);
         return response.data.name;
     } catch (error) {
         console.error('Failed to get user name:', error.response.data);
@@ -133,16 +133,16 @@ async function handleMessage(sender_psid, received_message) {
 
     //check if need to notify admin
     if (received_message.text && received_message.text.includes('notify admin')) {
-        var admins = await getAdminsPSIDs(process.FB_PAGE_ID);
+        var admins = await getAdminsPSIDs(process.env.FB_PAGE_ID);
 
         console.log(admins);
 
-        // var username = await getUserName(sender_psid);
+        var username = await getUserName(sender_psid);
 
-        // // Create the payload for a basic text message
-        // response = {
-        //     "text": `an user with name ${username} has message the page`
-        // }
+        // Create the payload for a basic text message
+        response = {
+            "text": `an user with name ${username} has message the page`
+        }
 
         // await sendToAdmin(null, `an user with name ${username} has message the page`)
     }
