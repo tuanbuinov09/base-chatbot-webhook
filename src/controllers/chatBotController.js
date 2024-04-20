@@ -20,10 +20,15 @@ async function areAdminsOnline(pageId) {
 
 // get admins psid
 async function getAdminsPSIDs(pageId) {
-    const response = await fetch(`https://graph.facebook.com/v12.0/${pageId}/roles?access_token=${process.env.FB_PAGE_TOKEN}`);
-    const admins = await response.json();
+    try {
+        const response = await fetch(`https://graph.facebook.com/v7.0/${pageId}?fields=roles&access_token=${process.env.FB_PAGE_TOKEN}`);
+        const admins = await response.json();
 
-    return admins;
+        return admins;
+    }
+    catch (error) {
+        console.error('error getting admins id: ', error.message);
+    }
 };
 
 
