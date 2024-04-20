@@ -18,7 +18,7 @@ async function areAdminsOnline(pageId) {
     return false; // No admins are online
 };
 
-// get admin psid
+// get admins psid
 async function getAdminsPSIDs(pageId) {
     const response = await fetch(`https://graph.facebook.com/v12.0/${pageId}/roles?access_token=${process.FB_PAGE_TOKEN}`);
     const admins = await response.json();
@@ -26,6 +26,33 @@ async function getAdminsPSIDs(pageId) {
     return admins;
 };
 
+
+// Function to send message to admin
+async function sendToAdmin(senderPSID, messageText, ADMIN_PSID) {
+    try {
+        const response = await axios.post('https://graph.facebook.com/v12.0/me/messages', {
+            recipient: { id: ADMIN_PSID },
+            message: { text: messageText },
+            messaging_type: 'RESPONSE',
+            access_token: process.FB_PAGE_TOKEN
+        });
+
+        console.log('Message sent to admin:', response.data);
+    } catch (error) {
+        console.error('Failed to send message to admin:', error.message);
+    }
+}
+
+// Function to get user's name by PSID
+async function getUserName(psid) {
+    try {
+        const response = await axios.get(`https://graph.facebook.com/${psid}?fields=name&access_token=${process.FB_PAGE_TOKEN}`);
+        return response.data.name;
+    } catch (error) {
+        console.error('Failed to get user name:', error.response.data);
+        return null;
+    }
+}
 
 let postWebhook = async (req, res) => {
     // Parse the request body from the POST
@@ -39,7 +66,7 @@ let postWebhook = async (req, res) => {
 
             // Gets the body of the webhook event
             let webhook_event = entry.messaging[0];
-            console.log("web hook Event:", webhook_event);
+            // console.log("web hook Event:", webhook_event);
 
             // Get the sender PSID
             let sender_psid = webhook_event.sender.id;
@@ -51,7 +78,7 @@ let postWebhook = async (req, res) => {
             //TODO:
             //if page is sending to user, bot deactivate for 5 min for this user
             if (sender_psid === process.env.FB_PAGE_ID) {
-                console.log('PAGE ID: ' + sender_psid);
+                console.log('PAGE answer: ' + sender_psid);
                 return;
             }
 
@@ -108,10 +135,16 @@ async function handleMessage(sender_psid, received_message) {
     if (received_message.text && received_message.text.includes('notify admin')) {
         var admins = await getAdminsPSIDs();
 
+        console.log(admins);
+
+        var username = await getUserName(sender_psid);
+
         // Create the payload for a basic text message
         response = {
-            "text": admins.joins(',')
+            "text": `an user with name ${username} has message the page`
         }
+
+        // await sendToAdmin(null, `an user with name ${username} has message the page`)
     }
     else
 
