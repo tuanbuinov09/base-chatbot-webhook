@@ -23,11 +23,11 @@ async function getAdminsPSIDs(pageId) {
     const response = await fetch(`https://graph.facebook.com/v12.0/${pageId}/roles?access_token=${process.FB_PAGE_TOKEN}`);
     const admins = await response.json();
 
-    return admins; // No admins are online
+    return admins;
 };
 
 
-let postWebhook = (req, res) => {
+let postWebhook = async (req, res) => {
     // Parse the request body from the POST
     let body = req.body;
 
@@ -58,7 +58,7 @@ let postWebhook = (req, res) => {
             // Check if the event is a message or postback and
             // pass the event to the appropriate handler function
             if (webhook_event.message) {
-                handleMessage(sender_psid, webhook_event.message);
+                await handleMessage(sender_psid, webhook_event.message);
             } else if (webhook_event.postback) {
                 handlePostback(sender_psid, webhook_event.postback);
             }
@@ -101,47 +101,58 @@ let getWebhook = (req, res) => {
 };
 
 // Handles messages events
-function handleMessage(sender_psid, received_message) {
+async function handleMessage(sender_psid, received_message) {
     let response;
 
-    // Check if the message contains text
-    if (received_message.text) {
+    //check if need to notify admin
+    if (received_message.text && received_message.text.includes('notify admin')) {
+        var admins = await getAdminsPSIDs();
 
         // Create the payload for a basic text message
         response = {
-            "text": `You sent the message: "${received_message.text}". Now send me an image!`
+            "text": admins.joins(',')
         }
-    } else if (received_message.attachments) {
+    }
+    else
 
-        // Gets the URL of the message attachment
-        let attachment_url = received_message.attachments[0].payload.url;
-        response = {
-            "attachment": {
-                "type": "template",
-                "payload": {
-                    "template_type": "generic",
-                    "elements": [{
-                        "title": "Is this the right picture?",
-                        "subtitle": "Tap a button to answer.",
-                        "image_url": attachment_url,
-                        "buttons": [
-                            {
-                                "type": "postback",
-                                "title": "Yes!",
-                                "payload": "yes",
-                            },
-                            {
-                                "type": "postback",
-                                "title": "No!",
-                                "payload": "no",
-                            }
-                        ],
-                    }]
+        // Check if the message contains text
+        if (received_message.text) {
+
+            // Create the payload for a basic text message
+            response = {
+                "text": `You sent the message: "${received_message.text}". Now send me an image!`
+            }
+        } else if (received_message.attachments) {
+
+            // Gets the URL of the message attachment
+            let attachment_url = received_message.attachments[0].payload.url;
+            response = {
+                "attachment": {
+                    "type": "template",
+                    "payload": {
+                        "template_type": "generic",
+                        "elements": [{
+                            "title": "Is this the right picture?",
+                            "subtitle": "Tap a button to answer.",
+                            "image_url": attachment_url,
+                            "buttons": [
+                                {
+                                    "type": "postback",
+                                    "title": "Yes!",
+                                    "payload": "yes",
+                                },
+                                {
+                                    "type": "postback",
+                                    "title": "No!",
+                                    "payload": "no",
+                                }
+                            ],
+                        }]
+                    }
                 }
             }
-        }
 
-    }
+        }
 
     // Sends the response message
     callSendAPI(sender_psid, response);
@@ -160,6 +171,7 @@ function handlePostback(sender_psid, received_postback) {
     } else if (payload === 'no') {
         response = { "text": "Oops, try sending another image." }
     }
+
     // Send the message to acknowledge the postback
     callSendAPI(sender_psid, response);
 }
