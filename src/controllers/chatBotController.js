@@ -20,26 +20,26 @@ async function areAdminsOnline(pageId) {
 
 // get admins psid
 async function getAdminsPSIDs(pageId) {
-    try {
-        const response = await axios.get(
-            `https://graph.facebook.com/v7.0/${pageId}?fields=roles&access_token=${process.env.FB_PAGE_TOKEN}`
-        );
+    // try {
+    const response = await axios.get(
+        `https://graph.facebook.com/v7.0/${pageId}?fields=roles&access_token=${process.env.FB_PAGE_TOKEN}`
+    );
 
-        // Parse the response to extract admins' PSIDs
-        const adminsPSIDs = [];
-        const roles = response.data.roles.data;
+    // Parse the response to extract admins' PSIDs
+    const adminsPSIDs = [];
+    const roles = response.data.roles.data;
 
-        roles.forEach(role => {
-            if (role.role === 'ADMIN') {
-                adminsPSIDs.push(role.id);
-            }
-        });
+    roles.forEach(role => {
+        if (role.role === 'ADMIN') {
+            adminsPSIDs.push(role.id);
+        }
+    });
 
-        return adminsPSIDs;
-    } catch (error) {
-        console.error('Failed to get admins\' PSIDs:', error.response.data);
-        return [];
-    }
+    return adminsPSIDs;
+    // } catch (error) {
+    //     console.error('Failed to get admins\' PSIDs:', error.response.data);
+    //     return [];
+    // }
 };
 
 
